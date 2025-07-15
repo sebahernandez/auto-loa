@@ -1,0 +1,75 @@
+---
+interface Props {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  buttonText?: string;
+  buttonUrl?: string;
+  reverse?: boolean;
+}
+
+const {title, subtitle, description, imageUrl, imageAlt, buttonText, buttonUrl, reverse} = Astro.props
+
+---
+
+<section class="py-5 sm:py-10 lg:py-20">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ${reverse ? 'lg:grid-flow-row-dense' : ''}`}>
+      
+      <!-- Caja de Texto -->
+      <div class={`space-y-6 ${reverse ? 'lg:col-start-2' : ''}`}>
+        <div class="space-y-4">
+          <!-- Subtítulo -->
+          {subtitle && (
+            <p class="text-blue-600 font-semibold text-sm uppercase tracking-wider">
+              {subtitle}
+            </p>
+          )}
+          
+          <!-- Título principal -->
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+            {title}
+          </h2>
+          
+          <!-- Descripción -->
+          <p class="text-lg text-gray-600 leading-relaxed">
+            {description}
+          </p>
+        </div>
+        
+        <!-- Botón de acción (opcional) -->
+        {buttonText && buttonUrl && (
+          <div class="pt-4">
+            <a 
+              href={buttonUrl}
+              class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              {buttonText}
+              <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+        )}
+      </div>
+      
+      <!-- Caja de Imagen -->
+      <div class={`relative ${reverse ? 'lg:col-start-1' : ''}`}>
+        <div class="aspect-w-16 aspect-h-12 lg:aspect-w-4 lg:aspect-h-3">
+          <img 
+            src={imageUrl}
+            alt={imageAlt}
+            class="w-full h-full object-cover rounded-xl shadow-2xl"
+            loading="lazy"
+          />
+        </div>
+        
+        <!-- Overlay decorativo opcional -->
+        <div class="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl -z-10 blur-xl opacity-60"></div>
+      </div>
+      
+    </div>
+  </div>
+</section>
