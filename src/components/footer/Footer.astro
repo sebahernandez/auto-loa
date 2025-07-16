@@ -2,20 +2,20 @@
 // Footer component data
 const menuLinks = [
     { name: "Inicio", href: "/" },
-    { name: "Nosotros", href: "/about" },
+    { name: "Nosotros", href: "/nosotros" },
     { name: "Catálogo", href: "/catalogo" },
-    { name: "Contacto", href: "/contact" }
+    { name: "Contacto", href: "/contacto" }
 ];
 
 const socialLinks = [
     { 
         name: "Facebook", 
-        href: "#", 
+        href: "https://m.facebook.com/100088083213614/", 
         icon: "fab fa-facebook-f" 
     },
     { 
         name: "Instagram", 
-        href: "#", 
+        href: "https://www.instagram.com/autoloa_?igsh=bDk1azVuanF4b3Zu", 
         icon: "fab fa-instagram" 
     }
 ];
@@ -23,24 +23,36 @@ const socialLinks = [
 const contactInfo = [
     {
         type: "Dirección",
-        value: "Av. Principal 123, Santiago, Chile",
-        icon: "fas fa-map-marker-alt"
+        value: "Avda. Granaderos 2223.Calama, Antofagasta",
+        icon: "fas fa-map-marker-alt",
+        link: "https://maps.google.com/?q=Avda.+Granaderos+2223+Calama+Antofagasta+Chile",
+        isExternal: true
     },
     {
         type: "Teléfono",
-        value: "+56 9 1234 5678",
-        icon: "fas fa-phone"
+        value: "+56 9 4091 7734",
+        icon: "fas fa-phone",
+        link: "tel:+56940917734",
+        isExternal: false
     },
     {
         type: "Correo",
         value: "contacto@autoloa.cl",
-        icon: "fas fa-envelope"
+        icon: "fas fa-envelope",
+        link: "mailto:contacto@autoloa.cl",
+        isExternal: false
     }
 ];
 ---
 
-<footer class="bg-[#020617] text-white">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<footer class="bg-[#020617] text-white relative z-1">
+    <div
+           class="absolute inset-0 z-0"
+           style={{
+           backgroundImage: `radial-gradient(circle 500px at 50% 200px, #3e3e3e, transparent)`,
+          }}
+        />
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         <!-- Main Footer Content -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             
@@ -94,11 +106,22 @@ const contactInfo = [
                     {contactInfo.map((contact) => (
                         <div class="flex items-start space-x-3">
                             <div class="flex-shrink-0">
-                                <i class={`${contact.icon} text-blue-500 mt-1`}></i>
+                                <i class={`${contact.icon} text-white mt-1`}></i>
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-300">{contact.type}</p>
-                                <p class="text-gray-400">{contact.value}</p>
+                                {contact.link ? (
+                                    <a 
+                                        href={contact.link}
+                                        target={contact.isExternal ? "_blank" : undefined}
+                                        rel={contact.isExternal ? "noopener noreferrer" : undefined}
+                                        class="text-gray-400 hover:text-white transition-colors duration-200 underline decoration-dotted hover:decoration-solid"
+                                    >
+                                        {contact.value}
+                                    </a>
+                                ) : (
+                                    <p class="text-gray-400">{contact.value}</p>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -115,7 +138,7 @@ const contactInfo = [
                 </p>
                 <p class="text-gray-500 text-xs mt-2">
                     Diseño y desarrollo 
-                    <a href="https://venpu.cl" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors duration-200 font-medium">
+                    <a href="https://venpu.cl" target="_blank" class="text-red-400 hover:text-red-300 transition-colors duration-200 font-medium">
                         Venpu
                     </a>
                 </p>

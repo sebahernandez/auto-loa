@@ -1,17 +1,18 @@
 ---
 import Navbar from '../components/navbar/Navbar.astro';import "../styles/global.css";
 import Layout from '../layouts/Layout.astro';
-import Hero from '../components/hero-slider/Hero.astro';
+import Hero from '../components/hero-slider/Hero';
 import TextImage from '../components/text-and-image/TextImage.astro';
 import BannerStock from '../components/banner-stock/BannerStock.astro';
 import Brand from '../components/banner-brand/Brand.astro';
 import Testimonials from '../components/testimonials/Testimonials.astro';
 import FeaturedCars from '../components/featured-cars/FeaturedCars.astro';
+
 ---
 
 <Layout>
 	<Navbar />
-	<Hero />
+	<Hero client:load/>
 	<FeaturedCars />
 	<TextImage 
 		title="¿Por qué elegirnos?"
@@ -28,5 +29,6 @@ import FeaturedCars from '../components/featured-cars/FeaturedCars.astro';
     />
 	<Testimonials />
 	<Brand />
+	
 
 </Layout>

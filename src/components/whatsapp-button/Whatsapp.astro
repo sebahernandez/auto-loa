@@ -1,28 +1,15 @@
 ---
-import WhatsappIcon from './Whatsapp.astro';
+import WhatsappIcon from '../icons/WhatsappIcon.astro';
 
-
-const phoneNumbers = [
-  { number: '+56940403988', label: 'Kennedy' },
-  { number: '+56933806123', label: 'Vitacura' },
-  { number: '+56923806177', label: 'Concepción' }
-];
+const whatsappNumber = '+56940917734';
+const defaultMessage = 'En que te podemos ayudar hoy';
+const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(defaultMessage)}`;
 
 ---
 
-<button class="whatsapp-button" id="whatsapp-button">
+<a href={whatsappUrl} target="_blank" class="whatsapp-button">
   <WhatsappIcon />
-</button>
-
-
-<div class="phone-list flex" id="phone-list" style="display: none; z-index: 10;">
-  {phoneNumbers.map(({ number, label }) => (
-    <div class="flex items-center border-b-2 border-gray-100">
-      <small class="text-xs text-gray-500">📞 Sucursal -</small>
-      <a href={`https://wa.me/${number}`} target="_blank" class="text-sm text-blue-500">{label}</a>
-    </div>
-  ))}
-</div>
+</a>
 
 
 <style>
@@ -42,34 +29,18 @@ const phoneNumbers = [
       font-size: 24px;
       cursor: pointer;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      z-index: 10;
-    }
-    .phone-list {
-      position: fixed;
-      bottom: 90px;
-      right: 20px;
-      background: white;
-      border-radius: 8px;
-      padding: 10px;
-
-    }
-    .phone-list a {
-      color: black;
+      z-index: 1000;
       text-decoration: none;
-      padding: 5px 10px;
-      font-size: 14px;
-      border-bottom: 1px solid #ddd;
+      transition: all 0.3s ease;
     }
-    .phone-list a:last-child {
-      border-bottom: none;
+    
+    .whatsapp-button:hover {
+      background-color: #20BA5A;
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     }
-  </style>
-  
-
-  <script>
-    const btnWhatsapp = document.querySelector("#whatsapp-button") as HTMLButtonElement
-    const phoneList = document.querySelector("#phone-list") as HTMLDivElement
-    btnWhatsapp.addEventListener("click", () => {
-      phoneList.style.display = phoneList.style.display === "none" ? "block" : "none"
-    })
-  </script>
+    
+    .whatsapp-button:active {
+      transform: scale(1.05);
+    }
+</style>

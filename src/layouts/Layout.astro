@@ -1,6 +1,8 @@
 ---
 import Footer from '../components/footer/Footer.astro';
 import Navbar from '../components/navbar/Navbar.astro';
+import Whatsapp from '../components/whatsapp-button/Whatsapp.astro';
+import '../styles/global.css';
 
 export interface Props {
 	title?: string;
@@ -25,6 +27,7 @@ const { title = "Autoloa - automotora", description = "Automotora especializada 
 	<body>
 		<Navbar />
 		<slot />
+		<Whatsapp />
 		<Footer />
 	</body>
 </html>

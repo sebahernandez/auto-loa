@@ -1,0 +1,989 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import {fetchAllVehicles, getCarsByIds} from '../../lib/fetchSliders';
+import { formatNameForURL } from "../../helpers/stringHelpers";
+import { formatPrice } from "../../helpers/formatHelpers";
+
+export const prerender = false;
+
+const { name } = Astro.params || {};
+const autos = await fetchAllVehicles();
+const foundVehicle = autos.find(
+  (v) => formatNameForURL(v.name) === name
+);
+
+if (!foundVehicle) {
+  throw new Error(`No se encontró el vehículo con nombre: ${name}`);
+}
+
+const response = await getCarsByIds({ id: String(foundVehicle.id) });
+
+if (!response || !response.status) {
+  throw new Error(`No se encontró el vehículo con ID: ${foundVehicle.id}`);
+}
+
+const vehicle = response.data;
+console.log('Vehicle data:', vehicle);
+
+const formattedPrice = formatPrice(vehicle.price);
+
+// Usar imageGallery del vehículo o fallback a imageUrl
+const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0 
+  ? vehicle.imageGallery.map(img => {
+      if (typeof img === 'string') return img;
+      if (typeof img === 'object' && img !== null) {
+        return (img as any).imageUrl || (img as any).url || vehicle.imageUrl;
+      }
+      return vehicle.imageUrl;
+    }).filter(Boolean)
+  : [vehicle.imageUrl].filter(Boolean);
+---
+
+<Layout title={`${vehicle.name} - Auto Loa`} description={`${vehicle.name} - ${formattedPrice}`}>
+  <!-- Breadcrumb -->
+  <div class="py-[100px]">
+    <div class="container mx-auto px-4">
+      <nav class="text-sm text-gray-600">
+        <a href="/" class="hover:text-blue-600">Inicio</a>
+        <span class="mx-2">></span>
+        <a href="/catalogo" class="hover:text-blue-600">Vehículos</a>
+        <span class="mx-2">></span>
+        <span class="text-gray-900">{vehicle.name}</span>
+      </nav>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Columna Izquierda - Galería de Imágenes -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-sm border p-4 mb-6">
+          <!-- Galería con Thumbnails al lado izquierdo -->
+          <div class="flex gap-4">
+            <!-- Thumbnails Verticales -->
+            {vehicleImages.length > 1 && (
+              <div class="flex flex-col w-20 md:w-24">
+                <div class="flex flex-col gap-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" id="thumbnails-container">
+                  {vehicleImages.map((image, index) => (
+                    <button 
+                      type="button"
+                      class={`thumbnail-btn w-full h-16 md:h-20 rounded border-2 transition-all duration-200 overflow-hidden flex-shrink-0 ${index === 0 ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-blue-300'}`}
+                      data-index={index}
+                      data-image-src={image}
+                      aria-label={`Ver imagen ${index + 1}`}
+                    >
+                      <img 
+                        src={image} 
+                        alt={`${vehicle.name} - Miniatura ${index + 1}`}
+                        class="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+                
+                <!-- Controles de scroll para thumbnails -->
+                {vehicleImages.length > 4 && (
+                  <div class="flex flex-col gap-1 mt-2">
+                    <button 
+                      id="scroll-up-btn"
+                      class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 py-1 rounded text-xs transition-colors"
+                      aria-label="Subir thumbnails"
+                    >
+                      ▲
+                    </button>
+                    <button 
+                      id="scroll-down-btn"
+                      class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 py-1 rounded text-xs transition-colors"
+                      aria-label="Bajar thumbnails"
+                    >
+                      ▼
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <!-- Imagen Principal con Controles -->
+            <div class="relative flex-1 group">
+              <img 
+                id="main-image"
+                src={vehicleImages[0]} 
+                alt={`${vehicle.name} - Imagen principal`}
+                class="w-full h-96 object-cover rounded-lg cursor-zoom-in transition-transform duration-300"
+              />
+              
+              <!-- Controles de Navegación -->
+              {vehicleImages.length > 1 && (
+                <>
+                  <!-- Botón Anterior -->
+                  <button 
+                    id="prev-btn"
+                    class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"
+                    aria-label="Imagen anterior"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                  </button>
+                  
+                  <!-- Botón Siguiente -->
+                  <button 
+                    id="next-btn"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"
+                    aria-label="Imagen siguiente"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </button>
+                  
+                  <!-- Indicadores de Posición -->
+                  <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    {vehicleImages.map((_, index) => (
+                      <button 
+                        class={`indicator-dot w-3 h-3 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white' : 'bg-white bg-opacity-50'}`}
+                        data-index={index}
+                        aria-label={`Ir a imagen ${index + 1}`}
+                      ></button>
+                    ))}
+                  </div>
+                  
+                  <!-- Contador de Imágenes -->
+                  <div class="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
+                    <span id="current-index">1</span> / {vehicleImages.length}
+                  </div>
+                  
+                  <!-- Control de Autoplay -->
+                  <button 
+                    id="autoplay-btn"
+                    class="absolute top-4 left-4 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-2 rounded-full transition-all duration-300"
+                    aria-label="Pausar/Reproducir autoplay"
+                  >
+                    <svg id="play-icon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <svg id="pause-icon" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                    </svg>
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <!-- Características del Vehículo -->
+        <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <h2 class="text-2xl font-bold mb-4 text-gray-900">Características</h2>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-400">📅</span>
+              <div>
+                <p class="text-sm text-gray-600">Año</p>
+                <p class="font-semibold">{(vehicle as any).year || 'N/A'}</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-400">🚗</span>
+              <div>
+                <p class="text-sm text-gray-600">Kilometraje</p>
+                <p class="font-semibold">{vehicle.miles?.toLocaleString()} km</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-400">⛽</span>
+              <div>
+                <p class="text-sm text-gray-600">Combustible</p>
+                <p class="font-semibold">{vehicle.fuelType}</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-400">⚙️</span>
+              <div>
+                <p class="text-sm text-gray-600">Transmisión</p>
+                <p class="font-semibold">{vehicle.transmission}</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-400">📍</span>
+              <div>
+                <p class="text-sm text-gray-600">Ubicación</p>
+                <p class="font-semibold">{vehicle.vendedor?.sucursal || 'No especificada'}</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-400">🏷️</span>
+              <div>
+                <p class="text-sm text-gray-600">Estado</p>
+                <p class={`font-semibold ${vehicle.available ? 'text-green-600' : 'text-red-600'}`}>
+                  {vehicle.available ? 'Disponible' : 'Vendido'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="bg-white rounded-lg shadow-sm border p-6">
+          <h2 class="text-2xl font-bold mb-4 text-gray-900">Descripción</h2>
+          <div class="prose max-w-none text-gray-700">
+            <p class="mb-4">
+              {vehicle.description || `Este ${vehicle.name} es una excelente opción para quienes buscan un vehículo confiable y con gran desempeño. Con ${vehicle.miles?.toLocaleString()} kilómetros recorridos y motor ${vehicle.fuelType}, representa una oportunidad única en el mercado.`}
+            </p>
+            <p>
+              El vehículo cuenta con transmisión {vehicle.transmission} y se encuentra en excelentes condiciones. 
+              Ideal para uso familiar o trabajo, combina comodidad, seguridad y eficiencia en un solo paquete.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna Derecha - Información de Compra -->
+      <div class="lg:col-span-1">
+        <div class="sticky top-6">
+          <!-- Card de Precio y Compra -->
+          <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+            <div class="mb-4">
+              <h1 class="text-2xl font-bold text-gray-900 mb-2">{vehicle.name}</h1>
+              {vehicle.available ? (
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  ✓ Disponible
+                </span>
+              ) : (
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                  ✗ Vendido
+                </span>
+              )}
+            </div>
+
+            <div class="mb-6">
+              <p class="text-3xl font-bold text-gray-900">{formattedPrice}</p>
+              <p class="text-sm text-gray-600">Precio final</p>
+            </div>
+
+            {vehicle.available && (
+              <div class="space-y-3">
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                  Comprar ahora
+                </button>
+                <button class="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold py-3 px-4 rounded-lg border border-blue-200 transition-colors">
+                  Agregar a favoritos
+                </button>
+                <a 
+                  href="/contacto" 
+                  class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg transition-colors text-center block"
+                >
+                  Contactar vendedor
+                </a>
+              </div>
+            )}
+          </div>
+
+          <!-- Información del Vendedor -->
+          <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+            <h3 class="text-lg font-bold mb-4">Información del vendedor</h3>
+            <div class="space-y-3">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span class="text-blue-600 font-bold">AL</span>
+                </div>
+                <div>
+                  <p class="font-semibold">Auto Loa</p>
+                  <p class="text-sm text-gray-600">Vendedor oficial</p>
+                </div>
+              </div>
+              <div class="border-t pt-3">
+                <p class="text-sm text-gray-600 mb-2">Sucursal: {vehicle.vendedor?.sucursal || 'Principal'}</p>
+                <div class="flex space-x-2">
+                  <a 
+                    href="tel:+56940917734" 
+                    class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded text-sm font-medium text-center transition-colors"
+                  >
+                    📞 Llamar
+                  </a>
+                  <a 
+                    href="https://wa.me/56940917734?text=Hola, estoy interesado en el vehículo {encodeURIComponent(vehicle.name)}" 
+                    target="_blank"
+                    class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-3 rounded text-sm font-medium text-center transition-colors"
+                  >
+                    💬 WhatsApp
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Medios de Pago -->
+          <div class="bg-white rounded-lg shadow-sm border p-6">
+            <h3 class="text-lg font-bold mb-4">Medios de pago</h3>
+            <div class="space-y-3">
+              <div class="flex items-center space-x-2">
+                <span class="text-green-500">✓</span>
+                <span class="text-sm">Efectivo</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-green-500">✓</span>
+                <span class="text-sm">Transferencia bancaria</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-green-500">✓</span>
+                <span class="text-sm">Financiamiento disponible</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-green-500">✓</span>
+                <span class="text-sm">Permuta disponible</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    let currentImageIndex = 0;
+    let autoplayInterval;
+    let isAutoplayActive = true;
+    const autoplayDelay = 3000; // 3 segundos
+    
+    const mainImage = document.getElementById('main-image');
+    const thumbnails = document.querySelectorAll('.thumbnail-btn');
+    const indicatorDots = document.querySelectorAll('.indicator-dot');
+    const currentIndexSpan = document.getElementById('current-index');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const autoplayBtn = document.getElementById('autoplay-btn');
+    const playIcon = document.getElementById('play-icon');
+    const pauseIcon = document.getElementById('pause-icon');
+    const scrollUpBtn = document.getElementById('scroll-up-btn');
+    const scrollDownBtn = document.getElementById('scroll-down-btn');
+    const thumbnailsContainer = document.getElementById('thumbnails-container');
+    
+    const totalImages = thumbnails.length;
+    
+    // Función para scroll en thumbnails
+    function scrollThumbnails(direction) {
+      if (!thumbnailsContainer) return;
+      
+      const scrollAmount = 80; // Altura de thumbnail + gap
+      const currentScrollTop = thumbnailsContainer.scrollTop;
+      
+      if (direction === 'up') {
+        thumbnailsContainer.scrollTo({
+          top: Math.max(0, currentScrollTop - scrollAmount),
+          behavior: 'smooth'
+        });
+      } else if (direction === 'down') {
+        thumbnailsContainer.scrollTo({
+          top: currentScrollTop + scrollAmount,
+          behavior: 'smooth'
+        });
+      }
+    }
+    
+    // Función para asegurar que el thumbnail activo esté visible
+    function scrollToActiveThumbnail(index) {
+      if (!thumbnailsContainer || !thumbnails[index]) return;
+      
+      const thumbnail = thumbnails[index];
+      const containerRect = thumbnailsContainer.getBoundingClientRect();
+      const thumbnailRect = thumbnail.getBoundingClientRect();
+      
+      // Verificar si el thumbnail está fuera del área visible
+      if (thumbnailRect.top < containerRect.top) {
+        // Scroll hacia arriba
+        thumbnailsContainer.scrollTo({
+          top: thumbnail.offsetTop - 10,
+          behavior: 'smooth'
+        });
+      } else if (thumbnailRect.bottom > containerRect.bottom) {
+        // Scroll hacia abajo
+        thumbnailsContainer.scrollTo({
+          top: thumbnail.offsetTop - thumbnailsContainer.clientHeight + thumbnail.clientHeight + 10,
+          behavior: 'smooth'
+        });
+      }
+    }
+    
+    // Función para cambiar la imagen principal
+    function changeMainImage(imageSrc, index) {
+      if (!mainImage || index < 0 || index >= totalImages) return;
+      
+      currentImageIndex = index;
+      
+      // Cambiar la imagen principal con fade effect
+      mainImage.style.opacity = '0.5';
+      setTimeout(() => {
+        mainImage.src = imageSrc;
+        mainImage.style.opacity = '1';
+      }, 150);
+      
+      // Actualizar thumbnails
+      thumbnails.forEach((thumbnail, i) => {
+        const isActive = i === index;
+        thumbnail.classList.remove('border-blue-500', 'ring-2', 'ring-blue-200', 'border-gray-200', 'hover:border-blue-300');
+        if (isActive) {
+          thumbnail.classList.add('border-blue-500', 'ring-2', 'ring-blue-200');
+        } else {
+          thumbnail.classList.add('border-gray-200', 'hover:border-blue-300');
+        }
+      });
+      
+      // Actualizar indicadores
+      indicatorDots.forEach((dot, i) => {
+        dot.classList.remove('bg-white', 'bg-white', 'bg-opacity-50');
+        if (i === index) {
+          dot.classList.add('bg-white');
+        } else {
+          dot.classList.add('bg-white', 'bg-opacity-50');
+        }
+      });
+      
+      // Actualizar contador
+      if (currentIndexSpan) {
+        currentIndexSpan.textContent = index + 1;
+      }
+      
+      // Asegurar que el thumbnail activo esté visible
+      scrollToActiveThumbnail(index);
+    }
+    
+    // Función para ir a la siguiente imagen
+    function nextImage() {
+      const nextIndex = (currentImageIndex + 1) % totalImages;
+      const nextImageSrc = thumbnails[nextIndex]?.getAttribute('data-image-src');
+      if (nextImageSrc) {
+        changeMainImage(nextImageSrc, nextIndex);
+      }
+    }
+    
+    // Función para ir a la imagen anterior
+    function prevImage() {
+      const prevIndex = (currentImageIndex - 1 + totalImages) % totalImages;
+      const prevImageSrc = thumbnails[prevIndex]?.getAttribute('data-image-src');
+      if (prevImageSrc) {
+        changeMainImage(prevImageSrc, prevIndex);
+      }
+    }
+    
+    // Función para iniciar autoplay
+    function startAutoplay() {
+      if (totalImages <= 1) return;
+      autoplayInterval = setInterval(nextImage, autoplayDelay);
+      isAutoplayActive = true;
+      if (playIcon && pauseIcon) {
+        playIcon.classList.add('hidden');
+        pauseIcon.classList.remove('hidden');
+      }
+    }
+    
+    // Función para pausar autoplay
+    function pauseAutoplay() {
+      clearInterval(autoplayInterval);
+      isAutoplayActive = false;
+      if (playIcon && pauseIcon) {
+        pauseIcon.classList.add('hidden');
+        playIcon.classList.remove('hidden');
+      }
+    }
+    
+    // Función para toggle autoplay
+    function toggleAutoplay() {
+      if (isAutoplayActive) {
+        pauseAutoplay();
+      } else {
+        startAutoplay();
+      }
+    }
+    
+    // Event listeners para thumbnails
+    thumbnails.forEach((thumbnail, index) => {
+      thumbnail.addEventListener('click', function() {
+        const imageSrc = this.getAttribute('data-image-src');
+        if (imageSrc) {
+          pauseAutoplay();
+          changeMainImage(imageSrc, index);
+          setTimeout(startAutoplay, 2000);
+        }
+      });
+    });
+    
+    // Event listeners para indicadores
+    indicatorDots.forEach((dot, index) => {
+      dot.addEventListener('click', function() {
+        const imageSrc = thumbnails[index]?.getAttribute('data-image-src');
+        if (imageSrc) {
+          pauseAutoplay();
+          changeMainImage(imageSrc, index);
+          setTimeout(startAutoplay, 2000);
+        }
+      });
+    });
+    
+    // Event listeners para botones de navegación
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function() {
+        pauseAutoplay();
+        prevImage();
+        setTimeout(startAutoplay, 2000);
+      });
+    }
+    
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function() {
+        pauseAutoplay();
+        nextImage();
+        setTimeout(startAutoplay, 2000);
+      });
+    }
+    
+    // Event listeners para scroll de thumbnails
+    if (scrollUpBtn) {
+      scrollUpBtn.addEventListener('click', () => scrollThumbnails('up'));
+    }
+    
+    if (scrollDownBtn) {
+      scrollDownBtn.addEventListener('click', () => scrollThumbnails('down'));
+    }
+    
+    // Event listener para botón de autoplay
+    if (autoplayBtn) {
+      autoplayBtn.addEventListener('click', toggleAutoplay);
+    }
+    
+    // Scroll con rueda del mouse en thumbnails
+    if (thumbnailsContainer) {
+      thumbnailsContainer.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 'down' : 'up';
+        scrollThumbnails(delta);
+      });
+    }
+    
+    // Navegación con teclado
+    document.addEventListener('keydown', function(e) {
+      if (!mainImage) return;
+      
+      switch(e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          pauseAutoplay();
+          prevImage();
+          setTimeout(startAutoplay, 2000);
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          pauseAutoplay();
+          nextImage();
+          setTimeout(startAutoplay, 2000);
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          scrollThumbnails('up');
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          scrollThumbnails('down');
+          break;
+        case ' ':
+          e.preventDefault();
+          toggleAutoplay();
+          break;
+        case 'Escape':
+          pauseAutoplay();
+          break;
+      }
+    });
+    
+    // Pausar autoplay cuando la ventana no está en foco
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        pauseAutoplay();
+      } else if (isAutoplayActive) {
+        startAutoplay();
+      }
+    });
+    
+    // Pausar autoplay al hacer hover sobre la imagen
+    if (mainImage) {
+      const imageContainer = mainImage.parentElement;
+      imageContainer.addEventListener('mouseenter', pauseAutoplay);
+      imageContainer.addEventListener('mouseleave', () => {
+        if (isAutoplayActive) startAutoplay();
+      });
+    }
+    
+    // Iniciar autoplay si hay más de una imagen
+    if (totalImages > 1) {
+      startAutoplay();
+    }
+    
+    // Funcionalidad de zoom para la imagen principal
+    if (mainImage) {
+      mainImage.addEventListener('click', function() {
+        pauseAutoplay();
+        
+        // Crear modal de zoom
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4 cursor-pointer';
+        
+        const zoomedImage = document.createElement('img');
+        zoomedImage.src = this.src;
+        zoomedImage.className = 'max-w-full max-h-full object-contain cursor-default transition-transform duration-300';
+        zoomedImage.onclick = (e) => e.stopPropagation();
+        
+        const closeButton = document.createElement('button');
+        closeButton.innerHTML = '✕';
+        closeButton.className = 'absolute top-4 right-4 text-white text-3xl font-bold bg-black bg-opacity-50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-opacity-75 transition-all';
+        
+        const imageInfo = document.createElement('div');
+        imageInfo.className = 'absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-center';
+        imageInfo.innerHTML = `<p class="text-lg font-semibold">${mainImage.alt}</p><p class="text-sm opacity-75">Imagen ${currentImageIndex + 1} de ${totalImages}</p>`;
+        
+        // Cerrar modal
+        const closeModal = () => {
+          if (document.body.contains(modal)) {
+            document.body.removeChild(modal);
+            document.body.classList.remove('modal-open');
+            if (isAutoplayActive) startAutoplay();
+          }
+        };
+        
+        modal.addEventListener('click', closeModal);
+        closeButton.addEventListener('click', closeModal);
+        
+        // Cerrar con tecla Escape
+        const handleEscape = (e) => {
+          if (e.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', handleEscape);
+          }
+        };
+        document.addEventListener('keydown', handleEscape);
+        
+        modal.appendChild(zoomedImage);
+        modal.appendChild(closeButton);
+        modal.appendChild(imageInfo);
+        document.body.appendChild(modal);
+        document.body.classList.add('modal-open');
+      });
+    }
+  });
+</script>
+
+<style>
+  .prose p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  .thumbnail-btn {
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .thumbnail-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .thumbnail-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  }
+  
+  .thumbnail-btn:active {
+    transform: scale(0.98);
+  }
+  
+  .indicator-dot {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .indicator-dot:hover {
+    transform: scale(1.2);
+  }
+  
+  #main-image {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  #main-image:hover {
+    transform: scale(1.02);
+  }
+  
+  .cursor-zoom-in {
+    cursor: zoom-in;
+  }
+  
+  /* Scrollbar personalizado para thumbnails */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f3f4f6;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+  
+  /* Ocultar scrollbar en móviles */
+  @media (max-width: 768px) {
+    .scrollbar-thin {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  
+  /* Controles de navegación */
+  .group:hover button[id$="-btn"] {
+    opacity: 1;
+  }
+  
+  button[id$="-btn"]:hover {
+    transform: scale(1.1);
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  #autoplay-btn:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Botones de scroll para thumbnails */
+  #scroll-up-btn,
+  #scroll-down-btn {
+    transition: all 0.2s ease;
+  }
+  
+  #scroll-up-btn:hover,
+  #scroll-down-btn:hover {
+    background-color: #e5e7eb;
+    transform: scale(1.05);
+  }
+  
+  /* Animaciones suaves para cambios de estado */
+  .transition-gallery {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Efecto de carga para imágenes */
+  .thumbnail-btn img,
+  #main-image {
+    transition: opacity 0.3s ease;
+  }
+  
+  .thumbnail-btn img:not([src]) {
+    opacity: 0;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+  }
+  
+  @keyframes loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+  
+  /* Prevenir scroll del body cuando el modal esté abierto */
+  body.modal-open {
+    overflow: hidden;
+  }
+  
+  /* Modal mejorado */
+  .fixed.inset-0 {
+    backdrop-filter: blur(4px);
+  }
+  
+  /* Layout de galería - flex para thumbnails al lado */
+  .flex.gap-4 {
+    min-height: 400px;
+  }
+  
+  /* Mejorar la visualización en dispositivos móviles */
+  @media (max-width: 768px) {
+    .thumbnail-btn {
+      height: 50px;
+    }
+    
+    #main-image {
+      height: 250px;
+    }
+    
+    .flex.gap-4 {
+      flex-direction: column;
+      min-height: auto;
+    }
+    
+    .flex.flex-col.w-20 {
+      width: 100%;
+      max-height: none;
+    }
+    
+    .flex.flex-col.gap-2 {
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-height: none;
+      gap: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    
+    .flex.flex-col.gap-2 .thumbnail-btn {
+      min-width: 60px;
+      width: 60px;
+      height: 50px;
+    }
+    
+    #scroll-up-btn,
+    #scroll-down-btn {
+      display: none;
+    }
+    
+    .group button[id$="-btn"] {
+      opacity: 1; /* Siempre visible en móvil */
+    }
+    
+    .indicator-dot {
+      width: 0.5rem;
+      height: 0.5rem;
+    }
+    
+    .absolute.top-4.right-4 {
+      top: 0.5rem;
+      right: 0.5rem;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+    }
+    
+    .absolute.top-4.left-4 {
+      top: 0.5rem;
+      left: 0.5rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .thumbnail-btn {
+      height: 45px;
+      min-width: 50px;
+      width: 50px;
+    }
+    
+    #main-image {
+      height: 200px;
+    }
+    
+    .flex.gap-4 {
+      gap: 0.5rem;
+    }
+  }
+  
+  /* Animación para el contador de imágenes */
+  #current-index {
+    transition: all 0.3s ease;
+  }
+  
+  /* Estilos para accesibilidad */
+  button:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+  
+  /* Mejoras visuales para los controles */
+  .absolute button {
+    backdrop-filter: blur(8px);
+  }
+  
+  /* Efecto hover para la imagen principal */
+  .group:hover #main-image {
+    filter: brightness(1.05);
+  }
+  
+  /* Animación de entrada para el modal */
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .fixed.inset-0 img {
+    animation: modalFadeIn 0.3s ease-out;
+  }
+  
+  /* Smooth scroll para thumbnails */
+  #thumbnails-container {
+    scroll-behavior: smooth;
+  }
+  
+  /* Destacar thumbnail activo */
+  .thumbnail-btn.border-blue-500 {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  }
+  
+  /* Optimización para dispositivos con touch */
+  @media (hover: none) {
+    .thumbnail-btn:hover {
+      transform: none;
+    }
+    
+    .thumbnail-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .scrollbar-thin {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  
+  /* Animación para cambio de thumbnails */
+  .thumbnail-btn {
+    animation: thumbnailFadeIn 0.3s ease-out;
+  }
+  
+  @keyframes thumbnailFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+</style>

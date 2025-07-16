@@ -9,69 +9,86 @@ interface VehicleCardProps {
 
 export function VehicleCard({ vehicle }: VehicleCardProps) {
   const formattedPrice = formatPrice(vehicle.price);
-  console.log("Vehiculo:", vehicle);
+
   return (
-    <div className="relative bg-gray-900 rounded-lg shadow-lg overflow-hidden h-full border border-gray-800">
-      <div className="absolute top-2 right-3">
-        {vehicle.available ? (
-          <div className="flex items-center justify-center gap-2">
-            <div className="bg-green-400 text-black px-3 py-1 rounded-full text-[12px] font-bold uppercase">
-              Disponible
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center gap-2">
-            <div className="bg-red-500 text-white px-2 py-1 rounded-full text-[9px] font-bold uppercase">
-              Vendido
-            </div>
-          </div>
-        )}
-      </div>
-      <div>
-        <div className="absolute bottom-[175px] left-3">
-          {vehicle.location ? (
-            <div className="bg-yellow-300/90 text-black px-2 py-1 rounded-full text-[9px] font-bold uppercase">
-              {vehicle.vendedor.sucursal}
+    <div className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 h-full">
+      {/* Image Container */}
+      <div className="relative overflow-hidden">
+        <a href={`/vehiculos/${formatNameForURL(vehicle.name)}`}>
+          <img
+            src={vehicle.imageUrl}
+            alt={vehicle.name}
+            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </a>
+
+        {/* Status Badge */}
+        <div className="absolute top-3 right-3">
+          {vehicle.available ? (
+            <div className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+              ✓ Disponible
             </div>
           ) : (
-            <div className="bg-gray-800/80 text-white px-2 py-1 rounded-full text-[9px] font-bold uppercase">
-              Sin Sucursal
+            <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+              ✕ Vendido
             </div>
           )}
         </div>
+
+        {/* Location Badge */}
+        {/* <div className="absolute top-3 left-3">
+          <div className="bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-xs font-medium shadow-lg">
+            📍 {vehicle.vendedor.sucursal || "Sin Sucursal"}
+          </div>
+        </div> */}
       </div>
-      <a href={`/vehiculos/${formatNameForURL(vehicle.name)}`}>
-        <img
-          src={vehicle.imageUrl}
-          alt={vehicle.name}
-          className="w-full h-60 object-cover"
-        />
-      </a>
-      <div className="p-2">
-        {/* <span className="text-sm text-gray-400">{vehicle.year}</span> */}
-        <h3 className="font-bold text-[16px] mb-2 text-white">
-          <div className="h-12 pt-2">
-            <a href={`/vehiculos/${formatNameForURL(vehicle.name)}`}>
+
+      {/* Content */}
+      <div className="p-5">
+        {/* Title */}
+        <div className="mb-3">
+          <h3 className="font-semibold text-gray-900 text-md leading-tight line-clamp-2 mb-1 h-10">
+            <a
+              href={`/vehiculos/${formatNameForURL(vehicle.name)}`}
+              className="hover:text-gray-700 transition-colors"
+            >
               {vehicle.name}
             </a>
-          </div>
-        </h3>
-        <p className="text-xl font-bold text-yellow-400 mb-4">
-          {formattedPrice}
-        </p>
-        <div className="flex flex-wrap gap-2 my-3">
-          <span className="relative px-2 py-1 w-fit text-center bg-white font-bold text-[9px] text-[#1C3328] rounded-full uppercase inline-flex justify-center items-center mt-3.5 gap-2">
-            <div className="flex items-center gap-1">{vehicle.miles} KM</div>
-          </span>
+          </h3>
+        </div>
 
-          <span className="relative px-2 py-1 w-fit text-center bg-white font-bold text-[9px] text-[#1C3328] rounded-full uppercase inline-flex justify-center  items-center mt-3.5">
-            <div className="flex items-center gap-1">{vehicle.fuelType}</div>
-          </span>
-          <span className="relative px-2 py-1 w-fit text-center bg-white font-bold text-[9px] text-[#1C3328] rounded-full uppercase inline-flex justify-center  items-center mt-3.5">
-            <div className="flex items-center gap-1">
-              {vehicle.transmission}
+        {/* Vehicle Details */}
+        <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1">
+              <span className="text-gray-400">🚗</span>
+              <span>{vehicle.miles?.toLocaleString()} km</span>
             </div>
-          </span>
+            <div className="flex items-center space-x-1">
+              <span className="text-gray-400">⛽</span>
+              <span>{vehicle.fuelType}</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <span className="text-gray-400">⚙️</span>
+              <span>{vehicle.transmission}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Price */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-2xl font-bold text-gray-900">{formattedPrice}</p>
+            <p className="text-sm text-gray-500">Precio total</p>
+          </div>
+
+          {/* CTA Button */}
+          <a
+            href={`/vehiculos/${formatNameForURL(vehicle.name)}`}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
+          >
+            Ver detalles
+          </a>
         </div>
       </div>
     </div>
