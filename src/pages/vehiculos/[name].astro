@@ -23,7 +23,6 @@ if (!response || !response.status) {
 }
 
 const vehicle = response.data;
-console.log('Vehicle data:', vehicle);
 
 const formattedPrice = formatPrice(vehicle.price);
 
@@ -41,7 +40,7 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
 
 <Layout title={`${vehicle.name} - Auto Loa`} description={`${vehicle.name} - ${formattedPrice}`}>
   <!-- Breadcrumb -->
-  <div class="py-[100px]">
+  <div class="py-[30px]">
     <div class="container mx-auto px-4">
       <nav class="text-sm text-gray-600">
         <a href="/" class="hover:text-blue-600">Inicio</a>
@@ -53,22 +52,35 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
     </div>
   </div>
 
-  <main class="max-w-7xl mx-auto px-4 py-6">
+  <main class="container mx-auto px-4 py-6">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
       <!-- Columna Izquierda - Galería de Imágenes -->
       <div class="lg:col-span-2">
-        <div class="bg-white rounded-lg shadow-sm border p-4 mb-6">
+        <div class="bg-white rounded-lg shadow-sm border-gray-200 border p-4 mb-6">
           <!-- Galería con Thumbnails al lado izquierdo -->
           <div class="flex gap-4">
             <!-- Thumbnails Verticales -->
             {vehicleImages.length > 1 && (
               <div class="flex flex-col w-20 md:w-24">
-                <div class="flex flex-col gap-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" id="thumbnails-container">
+                <!-- Botón de scroll hacia arriba -->
+                {vehicleImages.length > 6 && (
+                  <button 
+                    id="scroll-up-btn"
+                    class="w-full bg-white hover:bg-gray-50 text-gray-700 py-2 rounded-t border border-gray-100 transition-colors shadow-sm mb-1 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Ver imágenes anteriores"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                    </svg>
+                  </button>
+                )}
+                
+                <div class="flex flex-col gap-2 thumbnail-viewport" id="thumbnails-container">
                   {vehicleImages.map((image, index) => (
                     <button 
                       type="button"
-                      class={`thumbnail-btn w-full h-16 md:h-20 rounded border-2 transition-all duration-200 overflow-hidden flex-shrink-0 ${index === 0 ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-blue-300'}`}
+                      class={`thumbnail-btn w-full h-16 md:h-20 rounded border-2 transition-all duration-200 overflow-hidden flex-shrink-0 ${index === 0 ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-100 hover:border-blue-300'} ${index >= 6 ? 'hidden' : ''}`}
                       data-index={index}
                       data-image-src={image}
                       aria-label={`Ver imagen ${index + 1}`}
@@ -82,99 +94,42 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
                   ))}
                 </div>
                 
-                <!-- Controles de scroll para thumbnails -->
-                {vehicleImages.length > 4 && (
-                  <div class="flex flex-col gap-1 mt-2">
-                    <button 
-                      id="scroll-up-btn"
-                      class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 py-1 rounded text-xs transition-colors"
-                      aria-label="Subir thumbnails"
-                    >
-                      ▲
-                    </button>
-                    <button 
-                      id="scroll-down-btn"
-                      class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 py-1 rounded text-xs transition-colors"
-                      aria-label="Bajar thumbnails"
-                    >
-                      ▼
-                    </button>
-                  </div>
+                <!-- Botón de scroll hacia abajo -->
+                {vehicleImages.length > 6 && (
+                  <button 
+                    id="scroll-down-btn"
+                    class="w-full bg-white hover:bg-gray-50 text-gray-700 py-2 rounded-b border border-gray-100 transition-colors shadow-sm mt-1 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Ver más imágenes"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
                 )}
               </div>
             )}
 
-            <!-- Imagen Principal con Controles -->
-            <div class="relative flex-1 group">
+            <!-- Imagen Principal -->
+            <div class="relative flex-1">
               <img 
                 id="main-image"
                 src={vehicleImages[0]} 
                 alt={`${vehicle.name} - Imagen principal`}
-                class="w-full h-96 object-cover rounded-lg cursor-zoom-in transition-transform duration-300"
+                class="w-full h-full object-cover rounded-lg cursor-zoom-in transition-transform duration-300"
               />
               
-              <!-- Controles de Navegación -->
+              <!-- Contador de Imágenes -->
               {vehicleImages.length > 1 && (
-                <>
-                  <!-- Botón Anterior -->
-                  <button 
-                    id="prev-btn"
-                    class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"
-                    aria-label="Imagen anterior"
-                  >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                  </button>
-                  
-                  <!-- Botón Siguiente -->
-                  <button 
-                    id="next-btn"
-                    class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"
-                    aria-label="Imagen siguiente"
-                  >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                  </button>
-                  
-                  <!-- Indicadores de Posición -->
-                  <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                    {vehicleImages.map((_, index) => (
-                      <button 
-                        class={`indicator-dot w-3 h-3 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white' : 'bg-white bg-opacity-50'}`}
-                        data-index={index}
-                        aria-label={`Ir a imagen ${index + 1}`}
-                      ></button>
-                    ))}
-                  </div>
-                  
-                  <!-- Contador de Imágenes -->
-                  <div class="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
-                    <span id="current-index">1</span> / {vehicleImages.length}
-                  </div>
-                  
-                  <!-- Control de Autoplay -->
-                  <button 
-                    id="autoplay-btn"
-                    class="absolute top-4 left-4 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-2 rounded-full transition-all duration-300"
-                    aria-label="Pausar/Reproducir autoplay"
-                  >
-                    <svg id="play-icon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <svg id="pause-icon" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                    </svg>
-                  </button>
-                </>
+                <div class="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
+                  <span id="current-index">1</span> / {vehicleImages.length}
+                </div>
               )}
             </div>
           </div>
         </div>
 
         <!-- Características del Vehículo -->
-        <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+        <div class="bg-white rounded-lg shadow-sm border-gray-200 border p-6 mb-6">
           <h2 class="text-2xl font-bold mb-4 text-gray-900">Características</h2>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div class="flex items-center space-x-2">
@@ -225,7 +180,7 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
         </div>
 
         <!-- Descripción -->
-        <div class="bg-white rounded-lg shadow-sm border p-6">
+        <div class="bg-white rounded-lg shadow-sm border-gray-200 border p-6">
           <h2 class="text-2xl font-bold mb-4 text-gray-900">Descripción</h2>
           <div class="prose max-w-none text-gray-700">
             <p class="mb-4">
@@ -243,7 +198,7 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
       <div class="lg:col-span-1">
         <div class="sticky top-6">
           <!-- Card de Precio y Compra -->
-          <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <div class="bg-white rounded-lg shadow-sm border-gray-200 border p-6 mb-6">
             <div class="mb-4">
               <h1 class="text-2xl font-bold text-gray-900 mb-2">{vehicle.name}</h1>
               {vehicle.available ? (
@@ -262,60 +217,20 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
               <p class="text-sm text-gray-600">Precio final</p>
             </div>
 
-            {vehicle.available && (
-              <div class="space-y-3">
-                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
-                  Comprar ahora
-                </button>
-                <button class="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold py-3 px-4 rounded-lg border border-blue-200 transition-colors">
-                  Agregar a favoritos
-                </button>
-                <a 
-                  href="/contacto" 
-                  class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg transition-colors text-center block"
-                >
-                  Contactar vendedor
-                </a>
-              </div>
-            )}
-          </div>
-
-          <!-- Información del Vendedor -->
-          <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
-            <h3 class="text-lg font-bold mb-4">Información del vendedor</h3>
-            <div class="space-y-3">
-              <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span class="text-blue-600 font-bold">AL</span>
-                </div>
-                <div>
-                  <p class="font-semibold">Auto Loa</p>
-                  <p class="text-sm text-gray-600">Vendedor oficial</p>
-                </div>
-              </div>
-              <div class="border-t pt-3">
-                <p class="text-sm text-gray-600 mb-2">Sucursal: {vehicle.vendedor?.sucursal || 'Principal'}</p>
-                <div class="flex space-x-2">
-                  <a 
-                    href="tel:+56940917734" 
-                    class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded text-sm font-medium text-center transition-colors"
-                  >
-                    📞 Llamar
-                  </a>
-                  <a 
-                    href="https://wa.me/56940917734?text=Hola, estoy interesado en el vehículo {encodeURIComponent(vehicle.name)}" 
-                    target="_blank"
-                    class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-3 rounded text-sm font-medium text-center transition-colors"
-                  >
-                    💬 WhatsApp
-                  </a>
-                </div>
-              </div>
-            </div>
+            <a 
+              href="/contacto" 
+              class={`w-full font-bold py-3 px-4 rounded-lg transition-colors text-center block ${
+                vehicle.available 
+                  ? 'bg-green-600 hover:bg-green-700 text-white' 
+                  : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+              }`}
+            >
+              Contactar vendedor
+            </a>
           </div>
 
           <!-- Medios de Pago -->
-          <div class="bg-white rounded-lg shadow-sm border p-6">
+          <div class="bg-white rounded-lg shadow-sm border-gray-200 border p-6">
             <h3 class="text-lg font-bold mb-4">Medios de pago</h3>
             <div class="space-y-3">
               <div class="flex items-center space-x-2">
@@ -330,10 +245,6 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
                 <span class="text-green-500">✓</span>
                 <span class="text-sm">Financiamiento disponible</span>
               </div>
-              <div class="flex items-center space-x-2">
-                <span class="text-green-500">✓</span>
-                <span class="text-sm">Permuta disponible</span>
-              </div>
             </div>
           </div>
         </div>
@@ -345,42 +256,56 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
 <script is:inline>
   document.addEventListener('DOMContentLoaded', function() {
     let currentImageIndex = 0;
-    let autoplayInterval;
-    let isAutoplayActive = true;
-    const autoplayDelay = 3000; // 3 segundos
+    let currentPage = 0;
+    const thumbnailsPerPage = 6;
     
     const mainImage = document.getElementById('main-image');
     const thumbnails = document.querySelectorAll('.thumbnail-btn');
-    const indicatorDots = document.querySelectorAll('.indicator-dot');
     const currentIndexSpan = document.getElementById('current-index');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const autoplayBtn = document.getElementById('autoplay-btn');
-    const playIcon = document.getElementById('play-icon');
-    const pauseIcon = document.getElementById('pause-icon');
     const scrollUpBtn = document.getElementById('scroll-up-btn');
     const scrollDownBtn = document.getElementById('scroll-down-btn');
     const thumbnailsContainer = document.getElementById('thumbnails-container');
     
     const totalImages = thumbnails.length;
+    const totalPages = Math.ceil(totalImages / thumbnailsPerPage);
     
-    // Función para scroll en thumbnails
+    // Función para mostrar/ocultar thumbnails según la página
+    function showThumbnailsPage(page) {
+      if (page < 0 || page >= totalPages) return;
+      
+      currentPage = page;
+      
+      thumbnails.forEach((thumbnail, index) => {
+        const startIndex = page * thumbnailsPerPage;
+        const endIndex = startIndex + thumbnailsPerPage;
+        
+        if (index >= startIndex && index < endIndex) {
+          thumbnail.classList.remove('hidden');
+        } else {
+          thumbnail.classList.add('hidden');
+        }
+      });
+      
+      // Actualizar estado de los botones
+      updateNavigationButtons();
+    }
+    
+    // Función para actualizar el estado de los botones de navegación
+    function updateNavigationButtons() {
+      if (scrollUpBtn) {
+        scrollUpBtn.disabled = currentPage === 0;
+      }
+      if (scrollDownBtn) {
+        scrollDownBtn.disabled = currentPage === totalPages - 1;
+      }
+    }
+    
+    // Función para scroll en thumbnails (paginación)
     function scrollThumbnails(direction) {
-      if (!thumbnailsContainer) return;
-      
-      const scrollAmount = 80; // Altura de thumbnail + gap
-      const currentScrollTop = thumbnailsContainer.scrollTop;
-      
-      if (direction === 'up') {
-        thumbnailsContainer.scrollTo({
-          top: Math.max(0, currentScrollTop - scrollAmount),
-          behavior: 'smooth'
-        });
-      } else if (direction === 'down') {
-        thumbnailsContainer.scrollTo({
-          top: currentScrollTop + scrollAmount,
-          behavior: 'smooth'
-        });
+      if (direction === 'up' && currentPage > 0) {
+        showThumbnailsPage(currentPage - 1);
+      } else if (direction === 'down' && currentPage < totalPages - 1) {
+        showThumbnailsPage(currentPage + 1);
       }
     }
     
@@ -388,23 +313,12 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
     function scrollToActiveThumbnail(index) {
       if (!thumbnailsContainer || !thumbnails[index]) return;
       
-      const thumbnail = thumbnails[index];
-      const containerRect = thumbnailsContainer.getBoundingClientRect();
-      const thumbnailRect = thumbnail.getBoundingClientRect();
+      // Calcular en qué página debería estar el thumbnail
+      const targetPage = Math.floor(index / thumbnailsPerPage);
       
-      // Verificar si el thumbnail está fuera del área visible
-      if (thumbnailRect.top < containerRect.top) {
-        // Scroll hacia arriba
-        thumbnailsContainer.scrollTo({
-          top: thumbnail.offsetTop - 10,
-          behavior: 'smooth'
-        });
-      } else if (thumbnailRect.bottom > containerRect.bottom) {
-        // Scroll hacia abajo
-        thumbnailsContainer.scrollTo({
-          top: thumbnail.offsetTop - thumbnailsContainer.clientHeight + thumbnail.clientHeight + 10,
-          behavior: 'smooth'
-        });
+      // Si el thumbnail no está en la página actual, cambiar a la página correcta
+      if (targetPage !== currentPage) {
+        showThumbnailsPage(targetPage);
       }
     }
     
@@ -424,21 +338,11 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
       // Actualizar thumbnails
       thumbnails.forEach((thumbnail, i) => {
         const isActive = i === index;
-        thumbnail.classList.remove('border-blue-500', 'ring-2', 'ring-blue-200', 'border-gray-200', 'hover:border-blue-300');
+        thumbnail.classList.remove('border-blue-500', 'ring-2', 'ring-blue-200', 'border-gray-100', 'hover:border-blue-300');
         if (isActive) {
           thumbnail.classList.add('border-blue-500', 'ring-2', 'ring-blue-200');
         } else {
-          thumbnail.classList.add('border-gray-200', 'hover:border-blue-300');
-        }
-      });
-      
-      // Actualizar indicadores
-      indicatorDots.forEach((dot, i) => {
-        dot.classList.remove('bg-white', 'bg-white', 'bg-opacity-50');
-        if (i === index) {
-          dot.classList.add('bg-white');
-        } else {
-          dot.classList.add('bg-white', 'bg-opacity-50');
+          thumbnail.classList.add('border-gray-100', 'hover:border-blue-300');
         }
       });
       
@@ -451,94 +355,15 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
       scrollToActiveThumbnail(index);
     }
     
-    // Función para ir a la siguiente imagen
-    function nextImage() {
-      const nextIndex = (currentImageIndex + 1) % totalImages;
-      const nextImageSrc = thumbnails[nextIndex]?.getAttribute('data-image-src');
-      if (nextImageSrc) {
-        changeMainImage(nextImageSrc, nextIndex);
-      }
-    }
-    
-    // Función para ir a la imagen anterior
-    function prevImage() {
-      const prevIndex = (currentImageIndex - 1 + totalImages) % totalImages;
-      const prevImageSrc = thumbnails[prevIndex]?.getAttribute('data-image-src');
-      if (prevImageSrc) {
-        changeMainImage(prevImageSrc, prevIndex);
-      }
-    }
-    
-    // Función para iniciar autoplay
-    function startAutoplay() {
-      if (totalImages <= 1) return;
-      autoplayInterval = setInterval(nextImage, autoplayDelay);
-      isAutoplayActive = true;
-      if (playIcon && pauseIcon) {
-        playIcon.classList.add('hidden');
-        pauseIcon.classList.remove('hidden');
-      }
-    }
-    
-    // Función para pausar autoplay
-    function pauseAutoplay() {
-      clearInterval(autoplayInterval);
-      isAutoplayActive = false;
-      if (playIcon && pauseIcon) {
-        pauseIcon.classList.add('hidden');
-        playIcon.classList.remove('hidden');
-      }
-    }
-    
-    // Función para toggle autoplay
-    function toggleAutoplay() {
-      if (isAutoplayActive) {
-        pauseAutoplay();
-      } else {
-        startAutoplay();
-      }
-    }
-    
     // Event listeners para thumbnails
     thumbnails.forEach((thumbnail, index) => {
       thumbnail.addEventListener('click', function() {
         const imageSrc = this.getAttribute('data-image-src');
         if (imageSrc) {
-          pauseAutoplay();
           changeMainImage(imageSrc, index);
-          setTimeout(startAutoplay, 2000);
         }
       });
     });
-    
-    // Event listeners para indicadores
-    indicatorDots.forEach((dot, index) => {
-      dot.addEventListener('click', function() {
-        const imageSrc = thumbnails[index]?.getAttribute('data-image-src');
-        if (imageSrc) {
-          pauseAutoplay();
-          changeMainImage(imageSrc, index);
-          setTimeout(startAutoplay, 2000);
-        }
-      });
-    });
-    
-    // Event listeners para botones de navegación
-    if (prevBtn) {
-      prevBtn.addEventListener('click', function() {
-        pauseAutoplay();
-        prevImage();
-        setTimeout(startAutoplay, 2000);
-      });
-    }
-    
-    if (nextBtn) {
-      nextBtn.addEventListener('click', function() {
-        pauseAutoplay();
-        nextImage();
-        setTimeout(startAutoplay, 2000);
-      });
-    }
     
     // Event listeners para scroll de thumbnails
     if (scrollUpBtn) {
@@ -547,11 +372,6 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
     
     if (scrollDownBtn) {
       scrollDownBtn.addEventListener('click', () => scrollThumbnails('down'));
-    }
-    
-    // Event listener para botón de autoplay
-    if (autoplayBtn) {
-      autoplayBtn.addEventListener('click', toggleAutoplay);
     }
     
     // Scroll con rueda del mouse en thumbnails
@@ -563,23 +383,9 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
       });
     }
     
-    // Navegación con teclado
+    // Navegación con teclado solo para thumbnails
     document.addEventListener('keydown', function(e) {
-      if (!mainImage) return;
-      
       switch(e.key) {
-        case 'ArrowLeft':
-          e.preventDefault();
-          pauseAutoplay();
-          prevImage();
-          setTimeout(startAutoplay, 2000);
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          pauseAutoplay();
-          nextImage();
-          setTimeout(startAutoplay, 2000);
-          break;
         case 'ArrowUp':
           e.preventDefault();
           scrollThumbnails('up');
@@ -588,44 +394,17 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
           e.preventDefault();
           scrollThumbnails('down');
           break;
-        case ' ':
-          e.preventDefault();
-          toggleAutoplay();
-          break;
-        case 'Escape':
-          pauseAutoplay();
-          break;
       }
     });
     
-    // Pausar autoplay cuando la ventana no está en foco
-    document.addEventListener('visibilitychange', function() {
-      if (document.hidden) {
-        pauseAutoplay();
-      } else if (isAutoplayActive) {
-        startAutoplay();
-      }
-    });
-    
-    // Pausar autoplay al hacer hover sobre la imagen
-    if (mainImage) {
-      const imageContainer = mainImage.parentElement;
-      imageContainer.addEventListener('mouseenter', pauseAutoplay);
-      imageContainer.addEventListener('mouseleave', () => {
-        if (isAutoplayActive) startAutoplay();
-      });
-    }
-    
-    // Iniciar autoplay si hay más de una imagen
-    if (totalImages > 1) {
-      startAutoplay();
+    // Inicializar vista de thumbnails
+    if (totalImages > 0) {
+      showThumbnailsPage(0);
     }
     
     // Funcionalidad de zoom para la imagen principal
     if (mainImage) {
       mainImage.addEventListener('click', function() {
-        pauseAutoplay();
-        
         // Crear modal de zoom
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4 cursor-pointer';
@@ -635,38 +414,136 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
         zoomedImage.className = 'max-w-full max-h-full object-contain cursor-default transition-transform duration-300';
         zoomedImage.onclick = (e) => e.stopPropagation();
         
+        // Controles de navegación en el modal
+        let modalImageIndex = currentImageIndex;
+        
+        // Botón anterior en modal
+        const modalPrevBtn = document.createElement('button');
+        modalPrevBtn.innerHTML = `
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        `;
+        modalPrevBtn.className = 'absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full transition-all duration-300 z-10';
+        modalPrevBtn.style.display = totalImages > 1 ? 'block' : 'none';
+        
+        // Botón siguiente en modal
+        const modalNextBtn = document.createElement('button');
+        modalNextBtn.innerHTML = `
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        `;
+        modalNextBtn.className = 'absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full transition-all duration-300 z-10';
+        modalNextBtn.style.display = totalImages > 1 ? 'block' : 'none';
+        
+        // Función para cambiar imagen en el modal
+        const changeModalImage = (direction) => {
+          if (direction === 'next') {
+            modalImageIndex = (modalImageIndex + 1) % totalImages;
+          } else if (direction === 'prev') {
+            modalImageIndex = (modalImageIndex - 1 + totalImages) % totalImages;
+          }
+          
+          const newImageSrc = thumbnails[modalImageIndex]?.getAttribute('data-image-src');
+          if (newImageSrc) {
+            zoomedImage.style.opacity = '0.5';
+            setTimeout(() => {
+              zoomedImage.src = newImageSrc;
+              zoomedImage.style.opacity = '1';
+              
+              // Actualizar también la imagen principal y thumbnails en segundo plano
+              changeMainImage(newImageSrc, modalImageIndex);
+              
+              // Actualizar info de la imagen
+              imageInfo.innerHTML = `<p class="text-lg font-semibold">${thumbnails[modalImageIndex]?.querySelector('img')?.alt || 'Imagen del vehículo'}</p><p class="text-sm opacity-75">Imagen ${modalImageIndex + 1} de ${totalImages}</p>`;
+            }, 150);
+          }
+        };
+        
+        // Event listeners para botones de navegación del modal
+        modalPrevBtn.onclick = (e) => {
+          e.stopPropagation();
+          changeModalImage('prev');
+        };
+        
+        modalNextBtn.onclick = (e) => {
+          e.stopPropagation();
+          changeModalImage('next');
+        };
+        
         const closeButton = document.createElement('button');
         closeButton.innerHTML = '✕';
-        closeButton.className = 'absolute top-4 right-4 text-white text-3xl font-bold bg-black bg-opacity-50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-opacity-75 transition-all';
+        closeButton.className = 'absolute top-4 right-4 text-white text-3xl font-bold bg-black bg-opacity-50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-opacity-75 transition-all z-10';
         
         const imageInfo = document.createElement('div');
-        imageInfo.className = 'absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-center';
+        imageInfo.className = 'absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-center z-10';
         imageInfo.innerHTML = `<p class="text-lg font-semibold">${mainImage.alt}</p><p class="text-sm opacity-75">Imagen ${currentImageIndex + 1} de ${totalImages}</p>`;
+        
+        // Hint de navegación (solo si hay más de una imagen)
+        const navigationHint = document.createElement('div');
+        if (totalImages > 1) {
+          navigationHint.className = 'modal-navigation-hint';
+          navigationHint.innerHTML = 'Usa ← → para navegar';
+          
+          // Ocultar el hint después de 3 segundos
+          setTimeout(() => {
+            if (navigationHint.parentNode) {
+              navigationHint.style.opacity = '0';
+              setTimeout(() => {
+                if (navigationHint.parentNode) {
+                  navigationHint.parentNode.removeChild(navigationHint);
+                }
+              }, 300);
+            }
+          }, 3000);
+        }
         
         // Cerrar modal
         const closeModal = () => {
           if (document.body.contains(modal)) {
             document.body.removeChild(modal);
             document.body.classList.remove('modal-open');
-            if (isAutoplayActive) startAutoplay();
+            // Remover event listeners del teclado específicos del modal
+            document.removeEventListener('keydown', handleModalKeydown);
+          }
+        };
+        
+        // Navegación con teclado en el modal
+        const handleModalKeydown = (e) => {
+          switch(e.key) {
+            case 'ArrowLeft':
+              e.preventDefault();
+              if (totalImages > 1) changeModalImage('prev');
+              break;
+            case 'ArrowRight':
+              e.preventDefault();
+              if (totalImages > 1) changeModalImage('next');
+              break;
+            case 'Escape':
+              e.preventDefault();
+              closeModal();
+              break;
           }
         };
         
         modal.addEventListener('click', closeModal);
-        closeButton.addEventListener('click', closeModal);
+        closeButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeModal();
+        });
         
-        // Cerrar con tecla Escape
-        const handleEscape = (e) => {
-          if (e.key === 'Escape') {
-            closeModal();
-            document.removeEventListener('keydown', handleEscape);
-          }
-        };
-        document.addEventListener('keydown', handleEscape);
+        // Agregar event listener para teclado
+        document.addEventListener('keydown', handleModalKeydown);
         
         modal.appendChild(zoomedImage);
+        modal.appendChild(modalPrevBtn);
+        modal.appendChild(modalNextBtn);
         modal.appendChild(closeButton);
         modal.appendChild(imageInfo);
+        if (totalImages > 1) {
+          modal.appendChild(navigationHint);
+        }
         document.body.appendChild(modal);
         document.body.classList.add('modal-open');
       });
@@ -698,15 +575,6 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
   
   .thumbnail-btn:active {
     transform: scale(0.98);
-  }
-  
-  .indicator-dot {
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .indicator-dot:hover {
-    transform: scale(1.2);
   }
   
   #main-image {
@@ -758,30 +626,31 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
     }
   }
   
-  /* Controles de navegación */
-  .group:hover button[id$="-btn"] {
-    opacity: 1;
-  }
-  
-  button[id$="-btn"]:hover {
-    transform: scale(1.1);
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-  
-  #autoplay-btn:hover {
-    transform: scale(1.1);
-  }
-  
-  /* Botones de scroll para thumbnails */
+  /* Botones de scroll para thumbnails - Estilo MercadoLibre/Airbnb */
   #scroll-up-btn,
   #scroll-down-btn {
     transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
-  #scroll-up-btn:hover,
-  #scroll-down-btn:hover {
-    background-color: #e5e7eb;
-    transform: scale(1.05);
+  #scroll-up-btn:hover:not(:disabled),
+  #scroll-down-btn:hover:not(:disabled) {
+    background-color: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  }
+  
+  #scroll-up-btn:active:not(:disabled),
+  #scroll-down-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  #scroll-up-btn:disabled,
+  #scroll-down-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
   }
   
   /* Animaciones suaves para cambios de estado */
@@ -821,9 +690,35 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
     backdrop-filter: blur(4px);
   }
   
+  /* Controles de navegación en el modal */
+  .fixed.inset-0 button[class*="left-4"],
+  .fixed.inset-0 button[class*="right-4"]:not([class*="top-4"]) {
+    backdrop-filter: blur(8px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .fixed.inset-0 button[class*="left-4"]:hover,
+  .fixed.inset-0 button[class*="right-4"]:not([class*="top-4"]):hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .fixed.inset-0 button[class*="left-4"]:active,
+  .fixed.inset-0 button[class*="right-4"]:not([class*="top-4"]):active {
+    transform: scale(0.95);
+  }
+  
   /* Layout de galería - flex para thumbnails al lado */
   .flex.gap-4 {
     min-height: 400px;
+  }
+  
+  /* Viewport de thumbnails con altura fija */
+  .thumbnail-viewport {
+    height: auto;
+    overflow: hidden;
   }
   
   /* Mejorar la visualización en dispositivos móviles */
@@ -846,7 +741,7 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
       max-height: none;
     }
     
-    .flex.flex-col.gap-2 {
+    .thumbnail-viewport {
       flex-direction: row;
       overflow-x: auto;
       overflow-y: hidden;
@@ -855,10 +750,14 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
       padding-bottom: 0.5rem;
     }
     
-    .flex.flex-col.gap-2 .thumbnail-btn {
+    .thumbnail-viewport .thumbnail-btn {
       min-width: 60px;
       width: 60px;
       height: 50px;
+    }
+    
+    .thumbnail-viewport .thumbnail-btn.hidden {
+      display: block; /* En móvil, mostrar todos los thumbnails */
     }
     
     #scroll-up-btn,
@@ -866,25 +765,27 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
       display: none;
     }
     
-    .group button[id$="-btn"] {
-      opacity: 1; /* Siempre visible en móvil */
+    .thumbnail-viewport {
+      max-height: none;
+      overflow-x: auto;
+      overflow-y: hidden;
     }
     
-    .indicator-dot {
-      width: 0.5rem;
-      height: 0.5rem;
+    /* Controles de navegación del modal en móvil */
+    .fixed.inset-0 button[class*="left-4"] {
+      left: 1rem;
+      padding: 0.75rem;
     }
     
-    .absolute.top-4.right-4 {
-      top: 0.5rem;
-      right: 0.5rem;
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
+    .fixed.inset-0 button[class*="right-4"]:not([class*="top-4"]) {
+      right: 1rem;
+      padding: 0.75rem;
     }
     
-    .absolute.top-4.left-4 {
-      top: 0.5rem;
-      left: 0.5rem;
+    .fixed.inset-0 button[class*="left-4"] svg,
+    .fixed.inset-0 button[class*="right-4"]:not([class*="top-4"]) svg {
+      width: 1.5rem;
+      height: 1.5rem;
     }
   }
   
@@ -915,13 +816,13 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
     outline-offset: 2px;
   }
   
-  /* Mejoras visuales para los controles */
+  /* Mejoras visuales para el contador */
   .absolute button {
     backdrop-filter: blur(8px);
   }
   
   /* Efecto hover para la imagen principal */
-  .group:hover #main-image {
+  #main-image:hover {
     filter: brightness(1.05);
   }
   
@@ -984,6 +885,27 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
     to {
       opacity: 1;
       transform: scale(1);
+    }
+  }
+  
+  /* Indicador de navegación en modal */
+  .modal-navigation-hint {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    opacity: 0.8;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  
+  @media (max-width: 768px) {
+    .modal-navigation-hint {
+      display: none;
     }
   }
 </style>
