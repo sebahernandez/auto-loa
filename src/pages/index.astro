@@ -6,14 +6,13 @@ import TextImage from '../components/text-and-image/TextImage.astro';
 import BannerStock from '../components/banner-stock/BannerStock.astro';
 import Brand from '../components/banner-brand/Brand.astro';
 import Testimonials from '../components/testimonials/Testimonials.astro';
-import FeaturedCars from '../components/featured-cars/FeaturedCars.astro';
+import {FeaturedCars} from '../components/featured-cars/FeaturedCars';
 
 ---
 
 <Layout>
-	<Navbar />
 	<Hero client:load/>
-	<FeaturedCars />
+	<FeaturedCars client:load />
 	<TextImage 
 		title="¿Por qué elegirnos?"
 		subtitle=""
@@ -30,5 +29,4 @@ import FeaturedCars from '../components/featured-cars/FeaturedCars.astro';
 	<Testimonials />
 	<Brand />
 	
-
 </Layout>

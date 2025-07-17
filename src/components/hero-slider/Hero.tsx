@@ -92,7 +92,7 @@ const HeroSlider: React.FC = () => {
   }, []);
 
   return (
-    <section className="hero-section py-8 sm:py-12 lg:py-16 relative overflow-hidden">
+    <section className="hero-section my-14 py-8 sm:py-12 lg:py-16 relative overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <Swiper
           ref={swiperRef}
@@ -121,12 +121,6 @@ const HeroSlider: React.FC = () => {
           grabCursor={true}
           watchOverflow={true}
           className="w-full h-full"
-          onSlideChange={() => {
-            console.log("Slide changed");
-          }}
-          onInit={() => {
-            console.log("Hero Swiper initialized");
-          }}
         >
           {slideImages.map((slide, index) => (
             <SwiperSlide key={index}>
