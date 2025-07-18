@@ -199,7 +199,7 @@ export function Catalogo() {
           </p>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="lg:hidden bg-red-400 text-black px-4 py-2 rounded-lg font-semibold"
+            className="lg:hidden bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold"
           >
             {showFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
           </button>
