@@ -59,35 +59,37 @@ const HeroSlider: React.FC = () => {
   const swiperRef = useRef<any>(null);
 
   useEffect(() => {
-    // Add custom styles for orange arrows and dots
+    // Aplicar estilos inmediatamente antes de que se rendericen los elementos
     const style = document.createElement("style");
     style.textContent = `
-      /* Custom orange navigation arrows */
+      /* Estilos aplicados inmediatamente para evitar el flash azul */
       .swiper-button-next,
       .swiper-button-prev {
-        color: #dc2626 !important; /* orange-600 */
+        color: #dc2626 !important;
       }
 
       .swiper-button-next:hover,
       .swiper-button-prev:hover {
-        color: #b91c1c !important; /* orange-700 */
+        color: #b91c1c !important;
       }
 
-      /* Custom orange pagination dots */
       .swiper-pagination-bullet {
-        background: #dc2626 !important; /* orange-600 */
+        background: #dc2626 !important;
         opacity: 0.5 !important;
       }
 
       .swiper-pagination-bullet-active {
-        background: #dc2626 !important; /* orange-600 */
+        background: #dc2626 !important;
         opacity: 1 !important;
       }
     `;
     document.head.appendChild(style);
 
     return () => {
-      document.head.removeChild(style);
+      // Limpiar estilos al desmontar
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
     };
   }, []);
 
@@ -109,11 +111,11 @@ const HeroSlider: React.FC = () => {
             pauseOnMouseEnter: true,
           }}
           navigation={{
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
+            nextEl: ".custom-swiper-button-next",
+            prevEl: ".custom-swiper-button-prev",
           }}
           pagination={{
-            el: ".swiper-pagination",
+            el: ".custom-swiper-pagination",
             clickable: true,
             dynamicBullets: true,
           }}
@@ -141,7 +143,7 @@ const HeroSlider: React.FC = () => {
                       </p>
                       <a
                         href="/catalogo"
-                        className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold text-sm sm:text-base lg:text-lg rounded-md sm:rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm sm:text-base lg:text-lg rounded-md sm:rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         Ver Stock
                         <svg
@@ -165,12 +167,18 @@ const HeroSlider: React.FC = () => {
             </SwiperSlide>
           ))}
 
-          {/* Navigation buttons */}
-          <div className="swiper-button-prev"></div>
-          <div className="swiper-button-next"></div>
+          {/* Navigation buttons con clases personalizadas y estilos inline */}
+          <div
+            className="custom-swiper-button-prev swiper-button-prev"
+            style={{ color: "#dc2626" }}
+          ></div>
+          <div
+            className="custom-swiper-button-next swiper-button-next"
+            style={{ color: "#dc2626" }}
+          ></div>
 
-          {/* Pagination */}
-          <div className="swiper-pagination"></div>
+          {/* Pagination con clase personalizada */}
+          <div className="custom-swiper-pagination swiper-pagination"></div>
         </Swiper>
       </div>
     </section>
