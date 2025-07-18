@@ -1,5 +1,5 @@
 ---
-import Navbar from '../components/navbar/Navbar.astro';import "../styles/global.css";
+
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/hero-slider/Hero';
 import TextImage from '../components/text-and-image/TextImage.astro';
@@ -10,7 +10,7 @@ import {FeaturedCars} from '../components/featured-cars/FeaturedCars';
 
 ---
 
-<Layout>
+<Layout title="AutoLoa - Tu automotora de confianza" description="Compra y vende vehículos 4x4 con confianza y seguridad. Descubre nuestro catálogo y contáctanos para más información.">
 	<Hero client:load/>
 	<FeaturedCars client:load />
 	<TextImage 
