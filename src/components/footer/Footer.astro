@@ -1,4 +1,6 @@
 ---
+import { transformer } from "astro:schema";
+
 // Footer component data
 const menuLinks = [
     { name: "Inicio", href: "/" },
@@ -11,12 +13,14 @@ const socialLinks = [
     { 
         name: "Facebook", 
         href: "https://m.facebook.com/100088083213614/", 
-        icon: "fab fa-facebook-f" 
+        icon: "fab fa-facebook-f",
+        target: "_blank"
     },
     { 
         name: "Instagram", 
         href: "https://www.instagram.com/autoloa_?igsh=bDk1azVuanF4b3Zu", 
-        icon: "fab fa-instagram" 
+        icon: "fab fa-instagram",
+        target: "_blank"
     }
 ];
 
@@ -75,6 +79,7 @@ const contactInfo = [
                                 href={social.href} 
                                 class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors duration-200"
                                 aria-label={social.name}
+                                target={social.target} rel="noopener noreferrer"
                             >
                                 <i class={`${social.icon} text-sm text-white`}></i>
                             </a>

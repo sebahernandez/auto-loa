@@ -59,28 +59,28 @@ const HeroSlider: React.FC = () => {
   const swiperRef = useRef<any>(null);
 
   useEffect(() => {
-    // Add custom styles for red arrows and dots
+    // Add custom styles for orange arrows and dots
     const style = document.createElement("style");
     style.textContent = `
-      /* Custom red navigation arrows */
+      /* Custom orange navigation arrows */
       .swiper-button-next,
       .swiper-button-prev {
-        color: #dc2626 !important; /* red-600 */
+        color: #dc2626 !important; /* orange-600 */
       }
 
       .swiper-button-next:hover,
       .swiper-button-prev:hover {
-        color: #b91c1c !important; /* red-700 */
+        color: #b91c1c !important; /* orange-700 */
       }
 
-      /* Custom red pagination dots */
+      /* Custom orange pagination dots */
       .swiper-pagination-bullet {
-        background: #dc2626 !important; /* red-600 */
+        background: #dc2626 !important; /* orange-600 */
         opacity: 0.5 !important;
       }
 
       .swiper-pagination-bullet-active {
-        background: #dc2626 !important; /* red-600 */
+        background: #dc2626 !important; /* orange-600 */
         opacity: 1 !important;
       }
     `;
@@ -117,7 +117,7 @@ const HeroSlider: React.FC = () => {
             clickable: true,
             dynamicBullets: true,
           }}
-          centeredSlides={true}
+          centeorangeSlides={true}
           grabCursor={true}
           watchOverflow={true}
           className="w-full h-full"
@@ -141,7 +141,7 @@ const HeroSlider: React.FC = () => {
                       </p>
                       <a
                         href="/catalogo"
-                        className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm sm:text-base lg:text-lg rounded-md sm:rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold text-sm sm:text-base lg:text-lg rounded-md sm:rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         Ver Stock
                         <svg

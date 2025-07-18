@@ -7,7 +7,7 @@ const socialLinks = [
         name: "Facebook", 
         href: "https://m.facebook.com/100088083213614/", 
         iconClass: "fab fa-facebook-f",
-        hoverColor: "hover:bg-red-600"
+        hoverColor: "hover:bg-orange-600"
     },
     { 
         name: "Instagram", 
@@ -37,10 +37,10 @@ const navLinks = [
         </a>
       </div>
 
-      <!-- Navigation Links (Hidden on mobile, centered on desktop) -->
+      <!-- Navigation Links (Hidden on mobile, centeorange on desktop) -->
       <div class="hidden lg:flex lg:items-center lg:space-x-8 lg:absolute lg:left-1/2 lg:transform lg:-translate-x-1/2">
         {navLinks.map((link) => (
-          <a href={link.href} class="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+          <a href={link.href} class="text-gray-700 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
             {link.name}         
           </a>
         ))}
