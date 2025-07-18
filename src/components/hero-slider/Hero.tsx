@@ -65,21 +65,21 @@ const HeroSlider: React.FC = () => {
       /* Estilos aplicados inmediatamente para evitar el flash azul */
       .swiper-button-next,
       .swiper-button-prev {
-        color: #dc2626 !important;
+        color: #ea580c !important;
       }
 
       .swiper-button-next:hover,
       .swiper-button-prev:hover {
-        color: #b91c1c !important;
+        color: #c2410c !important;
       }
 
       .swiper-pagination-bullet {
-        background: #dc2626 !important;
+        background: #ea580c !important;
         opacity: 0.5 !important;
       }
 
       .swiper-pagination-bullet-active {
-        background: #dc2626 !important;
+        background: #ea580c !important;
         opacity: 1 !important;
       }
     `;
@@ -143,7 +143,7 @@ const HeroSlider: React.FC = () => {
                       </p>
                       <a
                         href="/catalogo"
-                        className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm sm:text-base lg:text-lg rounded-md sm:rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold text-sm sm:text-base lg:text-lg rounded-md sm:rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         Ver Stock
                         <svg
@@ -170,11 +170,11 @@ const HeroSlider: React.FC = () => {
           {/* Navigation buttons con clases personalizadas y estilos inline */}
           <div
             className="custom-swiper-button-prev swiper-button-prev"
-            style={{ color: "#dc2626" }}
+            style={{ color: "#ea580c" }}
           ></div>
           <div
             className="custom-swiper-button-next swiper-button-next"
-            style={{ color: "#dc2626" }}
+            style={{ color: "#ea580c" }}
           ></div>
 
           {/* Pagination con clase personalizada */}
