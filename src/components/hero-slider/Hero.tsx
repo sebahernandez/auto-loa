@@ -117,7 +117,7 @@ const HeroSlider: React.FC = () => {
             clickable: true,
             dynamicBullets: true,
           }}
-          centeorangeSlides={true}
+          centeredSlides={true}
           grabCursor={true}
           watchOverflow={true}
           className="w-full h-full"
@@ -131,7 +131,7 @@ const HeroSlider: React.FC = () => {
                   className="w-full h-full object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-black/50 flex items-center">
-                  <div className="container mx-auto px-6 sm:px-8 lg:px-[130px]">
+                  <div className="container mx-auto px-12 sm:px-8 lg:px-[130px]">
                     <div className="max-w-full sm:max-w-2xl lg:max-w-3xl text-white">
                       <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4 leading-tight">
                         {slide.title}
