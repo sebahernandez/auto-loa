@@ -73,7 +73,7 @@ export const FeaturedCars: React.FC = () => {
               slidesPerView: 2,
             },
             1000: {
-              slidesPerView: 4,
+              slidesPerView: 3,
             },
             1500: {
               slidesPerView: 4,

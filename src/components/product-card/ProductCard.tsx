@@ -78,16 +78,18 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
         {/* Price */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-2xl font-bold text-gray-900">{formattedPrice}</p>
-            <p className="text-sm text-gray-500">Precio total</p>
+            <p className="text-sm text-gray-500">Precio</p>
+            <p className="text-[16px] font-bold text-gray-900">
+              {formattedPrice}
+            </p>
           </div>
 
           {/* CTA Button */}
           <a
             href={`/vehiculos/${formatNameForURL(vehicle.name)}`}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
+            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-[11px] font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
           >
-            Ver detalles
+            Ver más
           </a>
         </div>
       </div>
