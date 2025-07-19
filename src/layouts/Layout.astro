@@ -16,7 +16,7 @@ const { title, description, image } = Astro.props;
 const getImageFilename = (imageUrl: string) => {
 	// Si la imagen está vacía o undefined, usar la imagen por defecto
 	if (!imageUrl || imageUrl.trim() === '') {
-		return "/frontis-autoloa.webp";
+		return "frontis-autoloa.webp"; // Sin barra inicial
 	}
 	
 	if (imageUrl.includes('digitaloceanspaces.com')) {
@@ -24,14 +24,20 @@ const getImageFilename = (imageUrl: string) => {
 		const parts = imageUrl.split('/');
 		return parts[parts.length - 1];
 	}
-	// Si no es una URL de DigitalOcean, usar la imagen tal como viene
-	return imageUrl;
+	// Si no es una URL de DigitalOcean, quitar la barra inicial si existe
+	return imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
 };
 
-const imageFilename = getImageFilename(image || "/frontis-autoloa.webp");
+const imageFilename = getImageFilename(image || "frontis-autoloa.webp");
+
+// Detectar si estamos en desarrollo o producción
+const isDev = import.meta.env.DEV;
+const apiBaseUrl = isDev ? 'http://localhost:4321' : 'https://www.autoloa.cl';
 
 console.log(`Original image URL: ${image}`);
 console.log(`Extracted filename: ${imageFilename}`);
+console.log(`Environment: ${isDev ? 'development' : 'production'}`);
+console.log(`API Base URL: ${apiBaseUrl}`);
 ---
 
 <!doctype html>
@@ -42,7 +48,7 @@ console.log(`Extracted filename: ${imageFilename}`);
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
-		<meta property="og:image" content={`https://www.autoloa.cl/api/og/${imageFilename}`} />
+		<meta property="og:image" content={`${apiBaseUrl}/api/og/${imageFilename}`} />
 		<meta property="og:image:width" content="1200">
 		<meta property="og:image:height" content="630">
 		<meta property="og:image:type" content="image/jpeg">
@@ -55,6 +61,8 @@ console.log(`Extracted filename: ${imageFilename}`);
 		<slot />
 		<Whatsapp />
 		<Footer />
+		
+
 	</body>
 </html>
 
