@@ -1,0 +1,11 @@
+{
+  "buildCommand": "astro build",
+  "outputDirectory": "dist",
+  "devCommand": "astro dev",
+  "installCommand": "npm install",
+  "functions": {
+    "src/pages/api/og/[filename].ts": {
+      "runtime": "nodejs18.x"
+    }
+  }
+}

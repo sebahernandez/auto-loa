@@ -1,10 +1,10 @@
 // src/pages/api/og/[filename].ts
 import type { APIRoute } from "astro";
 
-// Indica que esta ruta debe manejarse en tiempo de ejecución (SSR)
+// Configuración explícita para SSR
 export const prerender = false;
 
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, request }) => {
   const { filename } = params;
 
   if (!filename) {
