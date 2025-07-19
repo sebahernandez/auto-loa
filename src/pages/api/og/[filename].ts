@@ -1,7 +1,6 @@
 // src/pages/api/og/[filename].ts
 import type { APIRoute } from "astro";
-// Configuración explícita para SSR
-export const prerender = false;
+
 export const GET: APIRoute = async ({ params, request }) => {
   const { filename } = params;
   if (!filename) {
