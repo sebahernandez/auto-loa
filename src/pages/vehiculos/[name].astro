@@ -36,9 +36,11 @@ const vehicleImages = vehicle.imageGallery && vehicle.imageGallery.length > 0
       return vehicle.imageUrl;
     }).filter(Boolean)
   : [vehicle.imageUrl].filter(Boolean);
+
+  const ogImage =vehicleImages[0];
 ---
 
-<Layout title={`${vehicle.name} - Auto Loa`} description={`${vehicle.name} - ${formattedPrice}`} image={vehicleImages[0]}>
+<Layout title={`${vehicle.name} - Auto Loa`} description={`${vehicle.name} - ${formattedPrice}`} image={ogImage}>
 
   <main class="container mx-auto py-[80px] md:py-[120px] px-5 md:px-10">
 
